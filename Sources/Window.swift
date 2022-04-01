@@ -70,6 +70,8 @@ public final class Window {
 
     /// Whether the window is fullscreen or not.
     public var isFullscreen: WriteableProperty<OfType<Bool>> { return delegate.isFullscreen }
+    
+    public var element: Any { delegate.getElement() }
 }
 
 public func ==(lhs: Window, rhs: Window) -> Bool {
@@ -117,6 +119,8 @@ protocol WindowDelegate: AnyObject {
     var isFullscreen: WriteableProperty<OfType<Bool>>! { get }
 
     func equalTo(_ other: WindowDelegate) -> Bool
+    
+    func getElement() -> Any
 }
 
 // MARK: - OSXWindowDelegate
@@ -125,7 +129,7 @@ protocol WindowDelegate: AnyObject {
 final class OSXWindowDelegate<
     UIElement, ApplicationElement: ApplicationElementType, Observer: ObserverType
 >: WindowDelegate
-    where Observer.UIElement == UIElement, ApplicationElement.UIElement == UIElement {
+where Observer.UIElement == UIElement, ApplicationElement.UIElement == UIElement {
     typealias Object = Window
 
     fileprivate weak var notifier: EventNotifier?
@@ -144,6 +148,10 @@ final class OSXWindowDelegate<
     var title: Property<OfDefaultedType<String>>!
     var isMinimized: WriteableProperty<OfType<Bool>>!
     var isFullscreen: WriteableProperty<OfType<Bool>>!
+    
+    func getElement() -> Any {
+        axElement
+    }
 
     private init(_ appDelegate: ApplicationDelegate,
                  _ notifier: EventNotifier?,
